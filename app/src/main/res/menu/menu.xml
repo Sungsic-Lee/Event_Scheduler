@@ -10,4 +10,11 @@
         android:title="add_event"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/save_btn"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="Save"
+        android:visible="false"
+        app:showAsAction="always" />
+
 </menu>
