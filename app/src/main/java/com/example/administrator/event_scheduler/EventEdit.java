@@ -5,15 +5,20 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CalendarView;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+//public class EventEdit extends FragmentActivity implements OnClickListener {
 public class EventEdit extends AppCompatActivity implements OnClickListener {
 
     int mon, day;
@@ -29,12 +34,20 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_edit);
+//        setTheme(android.R.style.Theme_DeviceDefault_NoActionBar_Fullscreen);
 
+        //액션바 타이틀 변경하기
+        //getSupportActionBar().setTitle("ACTIONBAR");
+        //액션바 배경색 변경
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFF339999));
+        //홈버튼 표시
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        //액션바 숨기기
+        //hideActionBar();
         database = this.openOrCreateDatabase("Event_DB", SQLiteDatabase.CREATE_IF_NECESSARY, null);
 
         final ImageButton plus_btn = (ImageButton) findViewById(R.id.plus_btn);
-        plus_btn.setOnClickListener(this);
-        plus_btn.setVisibility(View.GONE);
         CalendarView calendar = (CalendarView)findViewById(R.id.calendarView);
 
 
@@ -47,14 +60,55 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
                 day = dayOfMonth;
                 Toast.makeText(EventEdit.this, ""+year+"/"+(month+1)+"/"
                         +dayOfMonth, Toast.LENGTH_SHORT).show();
-                plus_btn.setVisibility(View.VISIBLE);
             }
-
         });
-
     }
 
     @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(this, AddEvent.class);
+        switch (v.getId()) {
+
+        }
+
+    }
+
+    //back 버튼 추가
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    //액션버튼을 클릭했을때의 동작
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                Toast.makeText(this, "홈버튼", Toast.LENGTH_SHORT).show();
+                this.finish();
+                break;
+            case R.id.plus_btn:
+                Intent intent = new Intent(this, AddEvent.class);
+                intent.putExtra("month", Integer.toString(mon));
+                intent.putExtra("day", Integer.toString(day));
+                startActivity(intent);
+                Toast.makeText(getApplicationContext(), "Click!", Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    //액션바 숨기기
+    private void hideActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null)
+            actionBar.hide();
+    }
+
+@Override
     protected void onRestart() {
         super.onRestart();
 
@@ -77,23 +131,17 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
 
         final DBHelper dbManager = new DBHelper(getApplicationContext(), "Event_DB", null, 1);
         dbManager.onCreate(database);
-        dbManager.insert(title, Integer.parseInt(month), Integer.parseInt(day1), Integer.parseInt(hour), Integer.parseInt(minutes), Integer.parseInt(scale));
-    }
-
-
-    @Override
-    public void onClick(View v) {
-        Intent intent = new Intent(this, AddEvent.class);
-        switch (v.getId()) {
-            case R.id.plus_btn:
-                intent.putExtra("month", Integer.toString(mon));
-                intent.putExtra("day", Integer.toString(day));
-                startActivity(intent);
-                Toast.makeText(getApplicationContext(), "Click!", Toast.LENGTH_SHORT).show();
-                break;
+        if(!((title == null) && (month == null) && (day1 == null) && (hour == null) && (minutes == null) && (scale == null)))
+            dbManager.insert(title, Integer.parseInt(month), Integer.parseInt(day1), Integer.parseInt(hour), Integer.parseInt(minutes), Integer.parseInt(scale));
+        else {
+            Toast.makeText(this, "숫자를 입력해주십시오!", Toast.LENGTH_SHORT).show();
+            Log.w("DB DATA ERROR", "DB data is not number");
         }
 
     }
+
+
+
 
     public class DBHelper extends SQLiteOpenHelper {
 
