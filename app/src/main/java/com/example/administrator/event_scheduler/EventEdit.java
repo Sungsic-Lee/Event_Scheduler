@@ -14,27 +14,39 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 //public class EventEdit extends FragmentActivity implements OnClickListener {
 public class EventEdit extends AppCompatActivity implements OnClickListener {
 
     int mon, day;
-    String month, day1, hour, minutes, scale;
-    String title;
+    int month = 0, day1 = 0, hour = 0, minutes = 0, scale = 0;
+    String title, temp[], read_DB, read_DB_split[];
     boolean[][] date = new boolean[12][31];
-
-
-
+    Calendar calendar = Calendar.getInstance();
     private SQLiteDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_edit);
-//        setTheme(android.R.style.Theme_DeviceDefault_NoActionBar_Fullscreen);
+        ListView listView = (ListView)findViewById(R.id.event_list);
+        //dbManager.delete();           //DB 초기화
+
+        SimpleDateFormat Date = new SimpleDateFormat("MM"+","+"dd");
+        String time = Date.format(calendar.getTime());
+        temp = time.split(",");
+        mon = Integer.parseInt(temp[0]);
+        day = Integer.parseInt(temp[1]);
+
 
         //액션바 타이틀 변경하기
         //getSupportActionBar().setTitle("ACTIONBAR");
@@ -51,24 +63,58 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
         CalendarView calendar = (CalendarView)findViewById(R.id.calendarView);
 
 
-
         //리스너 등록
         calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                mon = month;
+                mon = month+1;
                 day = dayOfMonth;
-                Toast.makeText(EventEdit.this, ""+year+"/"+(month+1)+"/"
-                        +dayOfMonth, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        //DB 관련
+        final DBHelper dbManager = new DBHelper(getApplicationContext(), "Event_DB", null, 1);
+        String read_DB = dbManager.serching(mon);
+        String read_DB_split [];
+        read_DB_split = read_DB.split(";");
+
+
+        //ListView 관련
+        ListView listView = (ListView)findViewById(R.id.event_list);
+        ArrayAdapter<String> adapter1;
+        adapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, read_DB_split);
+        listView.setAdapter(adapter1);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(EventEdit.this, "click",Toast.LENGTH_SHORT).show();
+                // List View 클릭
             }
         });
     }
 
     @Override
-    public void onClick(View v) {
-        Intent intent = new Intent(this, AddEvent.class);
-        switch (v.getId()) {
+    protected void onRestart() {
+        super.onRestart();
 
+        final DBHelper dbManager = new DBHelper(getApplicationContext(), "Event_DB", null, 1);
+        dbManager.onCreate(database);
+        dbManager.insert(title, month, day1, hour, minutes, scale);
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
         }
 
     }
@@ -90,15 +136,33 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
                 this.finish();
                 break;
             case R.id.plus_btn:
-                Intent intent = new Intent(this, AddEvent.class);
+                Intent intent = new Intent(EventEdit.this, AddEvent.class);
                 intent.putExtra("month", Integer.toString(mon));
                 intent.putExtra("day", Integer.toString(day));
-                startActivity(intent);
-                Toast.makeText(getApplicationContext(), "Click!", Toast.LENGTH_SHORT).show();
+                startActivityForResult(intent, 1);
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, requestCode, data);
+        if(resultCode ==RESULT_OK) {
+            if (requestCode == 1) {
+                title = data.getStringExtra("title");
+                month = Integer.parseInt(data.getStringExtra("month"));
+                day1 = Integer.parseInt(data.getStringExtra("day"));
+                hour = Integer.parseInt(data.getStringExtra("hour"));
+                minutes = Integer.parseInt(data.getStringExtra("minutes"));
+                scale = Integer.parseInt(data.getStringExtra("scale"));
+            }
+        } else if(resultCode == RESULT_CANCELED) {
+            Toast.makeText(this, "숫자를 입력해주십시오!", Toast.LENGTH_SHORT).show();
+        } else if(resultCode == 1) {
+            // EXIT 버튼 눌렀을때
+        }
     }
 
     //액션바 숨기기
@@ -108,37 +172,7 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
             actionBar.hide();
     }
 
-@Override
-    protected void onRestart() {
-        super.onRestart();
 
-        Intent intent = getIntent();
-        try {
-            title = intent.getStringExtra("title");
-            month = intent.getExtras().getString("month");
-            day1 = intent.getExtras().getString("day");
-            hour = intent.getExtras().getString("hour");
-            minutes = intent.getExtras().getString("minutes");
-            scale = intent.getExtras().getString("scale");
-        }
-        catch(NullPointerException e) {
-            Log.w("Null pointer", "Null pointer error");
-        }
-
-
-        for(int i = 0; i <12; i++)
-            date[i] = intent.getBooleanArrayExtra("date_array"+i);
-
-        final DBHelper dbManager = new DBHelper(getApplicationContext(), "Event_DB", null, 1);
-        dbManager.onCreate(database);
-        if(!((title == null) && (month == null) && (day1 == null) && (hour == null) && (minutes == null) && (scale == null)))
-            dbManager.insert(title, Integer.parseInt(month), Integer.parseInt(day1), Integer.parseInt(hour), Integer.parseInt(minutes), Integer.parseInt(scale));
-        else {
-            Toast.makeText(this, "숫자를 입력해주십시오!", Toast.LENGTH_SHORT).show();
-            Log.w("DB DATA ERROR", "DB data is not number");
-        }
-
-    }
 
 
 
@@ -189,14 +223,28 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
             db.close();
         }
 
-        public void delete(String item) {
+        public void delete() {
             SQLiteDatabase db = getWritableDatabase();
             // 입력한 항목과 일치하는 행 삭제
-            db.execSQL("DELETE FROM Event_DB WHERE item='" + item + "';");
+            db.execSQL("DELETE FROM Event_DB");
             db.close();
         }
 
-        public String getResult() {
+        public String serching(int month) {
+            SQLiteDatabase db = getReadableDatabase();
+            String title = "";
+            int i = 0;
+            Cursor cursor = db.rawQuery("SELECT * FROM Event_DB", null);
+            while (cursor.moveToNext()) {
+                if(cursor.getInt(2) == month) {
+                    title += cursor.getString(2) + "월 " + cursor.getString(3) + "일\t"
+                            + cursor.getString(4) + "시" + cursor.getString(5) + "분\t\t"
+                            + cursor.getString(1) + ";";
+                }
+            }
+            return title;
+        }
+        public String getResult(int month) {
             // 읽기가 가능하게 DB 열기
             SQLiteDatabase db = getReadableDatabase();
             String result = "";

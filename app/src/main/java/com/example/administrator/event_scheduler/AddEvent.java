@@ -47,7 +47,7 @@ public class AddEvent extends AppCompatActivity implements OnClickListener {
         event_scale = (SeekBar) findViewById(R.id.Event_scale_select_bar);
 
         Button plus_btn = (Button) findViewById(R.id.plus_btn);
-        invalidateOptionsMenu();
+        invalidateOptionsMenu();        //Actin Bar menu 를 다시 불러옴
 
 
         Intent intent = getIntent();
@@ -74,22 +74,37 @@ public class AddEvent extends AppCompatActivity implements OnClickListener {
 
     @Override
     public void onClick(View v) throws NumberFormatException {
+        String title, month, day, hour, minutes;
+        title = title_input.getText().toString();
+        month = date_month_input.getText().toString();
+        day = date_day_input.getText().toString();
+        hour = time_hour_input.getText().toString();
+        minutes = time_minutes_input.getText().toString();
+
         switch (v.getId()) {
             case R.id.Save_btn:
-                Intent intent = new Intent(this, EventEdit.class);
-                intent.putExtra("title", title_input.getText());
-                intent.putExtra("month", date_month_input.getText().toString());
-                intent.putExtra("day", date_day_input.getText().toString());
-                intent.putExtra("hour", time_hour_input.getText().toString());
-                intent.putExtra("minutes", time_minutes_input.getText().toString());
-                intent.putExtra("scale", Integer.toString(scale));
-                date[Integer.parseInt(date_month_input.getText().toString())][Integer.parseInt(date_day_input.getText().toString())] = true;
-                intent.putExtra("date_array", date);
-                startActivity(intent);
+                if((title.getBytes().length != 0) && (month.getBytes().length !=0) && (day.getBytes().length !=0) && (hour.getBytes().length != 0) && (minutes.getBytes().length !=0)) {
+                    Intent intent = new Intent(AddEvent.this, EventEdit.class);
+                    intent.putExtra("title", title);
+                    intent.putExtra("month", month);
+                    intent.putExtra("day", day);
+                    intent.putExtra("hour", hour);
+                    intent.putExtra("minutes", minutes);
+                    intent.putExtra("scale", Integer.toString(scale));
+                    setResult(RESULT_OK, intent);
+                } else {
+                    Intent intent = new Intent(AddEvent.this, EventEdit.class);
+                    setResult(RESULT_CANCELED, intent);
+                    this.finish();
+                }
+//                date[Integer.parseInt(date_month_input.getText().toString())][Integer.parseInt(date_day_input.getText().toString())] = true;
+//                intent.putExtra("date_array", date);
                 this.finish();
                 break;
 
             case R.id.Exit_btn:
+                Intent intent = new Intent(AddEvent.this, EventEdit.class);
+                setResult(1, intent);
                 this.finish();
                 break;
         }
@@ -99,7 +114,7 @@ public class AddEvent extends AppCompatActivity implements OnClickListener {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
-        menu.findItem(R.id.plus_btn).setVisible(false);
+        menu.findItem(R.id.plus_btn).setVisible(false);         //plus_btn 안보이게 설정
         return true;
     }
 
