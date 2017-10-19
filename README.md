@@ -41,7 +41,7 @@
 > - 본 서비스는 대통령이나 가수가 행사나 공연시 사용하는 프롬프터와 코딩 교육 프로그램인 Scratch 에서 착안하여 개발하였습니다.
 
 ![image](./mdimg/prompter1.png)<br>
-![image](./mdimg/peompter2.png)<br>
+![image](./mdimg/prompter2.png)<br>
 ![image](./mdimg/scratch.png)<br>
 
 프롬프터는 강단에 선 사람이 할 말을 띄워주는 일종의 모니터로 대본을 표시해줍니다.
