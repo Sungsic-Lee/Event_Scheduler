@@ -61,13 +61,6 @@ public class EditingEvent extends AppCompatActivity {
             mMemoEdit.setText(new String(bytes));
         }
 
-
-
-//        String memoData = mTextFileManager.load();
-//        mMemoEdit.setText(memoData);
-
-        Toast.makeText(this, "불러오기 완료", Toast.LENGTH_SHORT).show();
-
     }
 
     public void onClick(View v){
@@ -79,8 +72,13 @@ public class EditingEvent extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
+
+        //액션바 아이콘 숨김 설정
         menu.findItem(R.id.plus_btn).setVisible(false);
         menu.findItem(R.id.save_btn).setVisible(true);
+        menu.findItem(R.id.load_btn).setVisible(true);
+        menu.findItem(R.id.share_btn).setVisible(true);
+        menu.findItem(R.id.delet_btn).setVisible(false);
         return true;
     }
 
@@ -95,17 +93,20 @@ public class EditingEvent extends AppCompatActivity {
             case R.id.save_btn:
                 String memoData = mMemoEdit.getText().toString();
                 String newDir = path + File.separator + id;
-                    storage.createDirectory(path);
-                    storage.createFile(newDir, memoData);
-
-                Log.d("path", newDir);
-
-
-//                mTextFileManager.save(memoData, Integer.toString(view_id));
-//                mMemoEdit.setText("");
-
+                storage.createDirectory(path);
+                storage.createFile(newDir, memoData);
                 Toast.makeText(this, "저장 완료", Toast.LENGTH_SHORT).show();
                 this.finish();
+                break;
+
+            case R.id.load_btn:
+
+
+                break;
+
+            case R.id.share_btn:
+
+
                 break;
         }
 

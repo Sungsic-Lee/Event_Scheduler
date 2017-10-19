@@ -44,8 +44,7 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
         day = Integer.parseInt(temp[1]);
 
         final DBHelper dbManager = new DBHelper(getApplicationContext(), "Event_DB", null, 1);
-        String read_DB = dbManager.serching("Event_DB", mon);
-        String read_DB_split [];
+        String read_DB = dbManager.serching_Event_DB("Event_DB", mon);
         read_DB_split = read_DB.split(";");
         ArrayAdapter<String> adapter1;
         adapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, read_DB_split);
@@ -119,6 +118,11 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
+        menu.findItem(R.id.plus_btn).setVisible(true);
+        menu.findItem(R.id.save_btn).setVisible(false);
+        menu.findItem(R.id.load_btn).setVisible(false);
+        menu.findItem(R.id.share_btn).setVisible(false);
+        menu.findItem(R.id.delet_btn).setVisible(false);
         return true;
     }
 
@@ -156,19 +160,24 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
 
                 final DBHelper dbManager = new DBHelper(getApplicationContext(), "Event_DB", null, 1);
                 dbManager.onCreate(database);
-                dbManager.insert("Event_DB", title, month, day1, hour, minutes, scale);
+                dbManager.insert_Event_DB("Event_DB", title, month, day1, hour, minutes, scale);
 
 
+                String read_DB = dbManager.serching_Event_DB("Event_DB", mon);
                 read_DB_split = read_DB.split(";");
+                //read_DB_split = read_DB.split(";");
                 ListView listView = (ListView)findViewById(R.id.event_list);
                 ArrayAdapter<String> adapter1;
                 adapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, read_DB_split);
                 listView.setAdapter(adapter1);
             }
-        } else if(resultCode == RESULT_CANCELED) {
+        } else if(resultCode == -1) {
             Toast.makeText(this, "숫자를 입력해주십시오!", Toast.LENGTH_SHORT).show();
         } else if(resultCode == 1) {
             // EXIT 버튼 눌렀을때
+        }
+        else {
+
         }
     }
 

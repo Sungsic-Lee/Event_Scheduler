@@ -5,8 +5,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 //public class MainEvent extends FragmentActivity implements View.OnClickListener{
 public class MainEvent extends AppCompatActivity implements View.OnClickListener{
@@ -31,17 +34,19 @@ public class MainEvent extends AppCompatActivity implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(this, EventEdit.class);
         switch (v.getId()) {
             case R.id.event_btn:
-                startActivity(intent);
+                Intent intent1 = new Intent(this, EventEdit.class);
+                startActivity(intent1);
                 break;
 
             case R.id.temp_btn:
-
+                Intent intent2 = new Intent(this, edit_templte.class);
+                startActivity(intent2);
                 break;
 
             case R.id.group_btn:
+
                 break;
         }
 
@@ -53,5 +58,27 @@ public class MainEvent extends AppCompatActivity implements View.OnClickListener
         if(actionBar !=null)
             actionBar.hide();
     }
+    //back 버튼 추가
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
 
+    //액션버튼을 클릭했을때의 동작
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                Toast.makeText(this, "홈버튼", Toast.LENGTH_SHORT).show();
+                this.finish();
+                break;
+            case R.id.plus_btn:
+
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }

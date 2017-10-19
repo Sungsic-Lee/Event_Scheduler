@@ -24,6 +24,7 @@ public class DBHelper extends SQLiteOpenHelper {
         /* 이름은 MONEYBOOK이고, 자동으로 값이 증가하는 _id 정수형 기본키 컬럼과
         item 문자열 컬럼, price 정수형 컬럼, create_at 문자열 컬럼으로 구성된 테이블을 생성. */
         db.execSQL("CREATE TABLE IF NOT EXISTS Event_DB (_id INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, Month INTEGER, Day INTEGER, Hour INTEGER, Minutes INTEGER, Size INTEGER);");
+        db.execSQL("CREATE TABLE IF NOT EXISTS Templte_DB (_id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT);");
     }
 
     // DB 업그레이드를 위해 버전이 변경될 때 호출되는 함수
@@ -32,7 +33,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public void insert(String DB_Name, String Title, int Month, int Day, int Hour, int Minutes, int Size) {
+    public void insert_Event_DB(String DB_Name, String Title, int Month, int Day, int Hour, int Minutes, int Size) {
         // 읽고 쓰기가 가능하게 DB 열기
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
@@ -49,6 +50,20 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void insert_Templte_DB(String DB_Name, String Name, String Path, String File_name) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try{
+            db.execSQL("INSERT INTO "+DB_Name+" VALUES(null, '" + Name + "');");
+            db.setTransactionSuccessful();
+        } catch (NumberFormatException e) {
+            Log.w("Data Error", "data format error!");
+        } finally {
+            db.endTransaction();
+        }
+        db.close();
+    }
+/*
     public void update(String item, int price) {
         SQLiteDatabase db = getWritableDatabase();
         // 입력한 항목과 일치하는 행의 가격 정보 수정
@@ -62,8 +77,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + DB_Name);
         db.close();
     }
-
-    public String serching(String DB_Name, int month) {
+*/
+    public String serching_Event_DB(String DB_Name, int month) {
         SQLiteDatabase db = getReadableDatabase();
         String title = "";
         int i = 0;
@@ -76,6 +91,29 @@ public class DBHelper extends SQLiteOpenHelper {
             }
         }
         return title;
+    }
+
+    public String serching_Templte_DB(String DB_Name) {
+        SQLiteDatabase db = getReadableDatabase();
+        String title = "";
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DB_Name, null);
+        while(cursor.moveToNext()) {
+            title +=cursor.getString(0)+"," + cursor.getString(1)+";";
+        }
+
+        return title;
+    }
+
+    public String serching_special(String DB_Name, int i) {
+        SQLiteDatabase db = getReadableDatabase();
+        String title = "";
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DB_Name, null);
+        if(cursor.moveToNext()) {
+            return cursor.getString(i);
+        }
+        else
+            return "";
+
     }
     public String getResult(int month) {
         // 읽기가 가능하게 DB 열기

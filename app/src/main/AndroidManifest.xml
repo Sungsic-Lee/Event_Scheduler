@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.administrator.event_scheduler">
-    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,7 +21,8 @@
         </activity>
         <activity android:name=".EventEdit" />
         <activity android:name=".AddEvent" />
-        <activity android:name=".EditingEvent"></activity>
+        <activity android:name=".EditingEvent" />
+        <activity android:name=".edit_templte"></activity>
     </application>
 
 </manifest>

@@ -94,7 +94,7 @@ public class AddEvent extends AppCompatActivity implements OnClickListener {
                     setResult(RESULT_OK, intent);
                 } else {
                     Intent intent = new Intent(AddEvent.this, EventEdit.class);
-                    setResult(RESULT_CANCELED, intent);
+                    setResult(-1, intent);
                     this.finish();
                 }
 //                date[Integer.parseInt(date_month_input.getText().toString())][Integer.parseInt(date_day_input.getText().toString())] = true;
@@ -114,7 +114,11 @@ public class AddEvent extends AppCompatActivity implements OnClickListener {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
-        menu.findItem(R.id.plus_btn).setVisible(false);         //plus_btn 안보이게 설정
+        menu.findItem(R.id.plus_btn).setVisible(false);
+        menu.findItem(R.id.save_btn).setVisible(false);
+        menu.findItem(R.id.load_btn).setVisible(false);
+        menu.findItem(R.id.share_btn).setVisible(false);
+        menu.findItem(R.id.delet_btn).setVisible(false);
         return true;
     }
 
