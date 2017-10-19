@@ -43,6 +43,13 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
         mon = Integer.parseInt(temp[0]);
         day = Integer.parseInt(temp[1]);
 
+        final DBHelper dbManager = new DBHelper(getApplicationContext(), "Event_DB", null, 1);
+        String read_DB = dbManager.serching("Event_DB", mon);
+        String read_DB_split [];
+        read_DB_split = read_DB.split(";");
+        ArrayAdapter<String> adapter1;
+        adapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, read_DB_split);
+        listView.setAdapter(adapter1);
 
         //액션바 타이틀 변경하기
         //getSupportActionBar().setTitle("ACTIONBAR");
@@ -151,8 +158,7 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
                 dbManager.onCreate(database);
                 dbManager.insert("Event_DB", title, month, day1, hour, minutes, scale);
 
-                String read_DB = dbManager.serching("Event_DB", mon);
-                String read_DB_split [];
+
                 read_DB_split = read_DB.split(";");
                 ListView listView = (ListView)findViewById(R.id.event_list);
                 ArrayAdapter<String> adapter1;

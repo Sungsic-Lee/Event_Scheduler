@@ -105,6 +105,7 @@ public class EditingEvent extends AppCompatActivity {
 //                mMemoEdit.setText("");
 
                 Toast.makeText(this, "저장 완료", Toast.LENGTH_SHORT).show();
+                this.finish();
                 break;
         }
 
