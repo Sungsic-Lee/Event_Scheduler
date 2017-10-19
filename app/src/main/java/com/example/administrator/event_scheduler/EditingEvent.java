@@ -1,28 +1,50 @@
 package com.example.administrator.event_scheduler;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class EditingEvent extends AppCompatActivity {
+import com.snatik.storage.Storage;
 
-    String view_id;
-    EditText mMemoEdit = null;
+import java.io.File;
+
+public class EditingEvent extends AppCompatActivity {
+    private static Context mContext;
+
+
+    Storage storage;
+    String path;
+
+    EditText mMemoEdit;
     TextFileManager mTextFileManager = new TextFileManager(this);
 
 
+    int selectListId, view_id;
+    String id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editing_event);
-        Intent intent = new Intent(EditingEvent.this, EventEdit.class);
-        view_id = intent.getStringExtra("select_view");
+        Intent intent = getIntent();
+        view_id = intent.getIntExtra("ViewId", 0);
+        id = Integer.toString(view_id);
+        id +=".txt";
+        Log.d("View id", Integer.toString(view_id));
+
+        storage = new Storage(this.getApplicationContext());
+        path = storage.getInternalFilesDirectory();
+        String newDir = path + File.separator + id;
+
+
+//        Toast.makeText(EditingEvent.this, view_id, Toast.LENGTH_SHORT).show();
         //액션바 타이틀 변경하기
         //getSupportActionBar().setTitle("ACTIONBAR");
         //액션바 배경색 변경
@@ -33,11 +55,16 @@ public class EditingEvent extends AppCompatActivity {
 
         //액션바 숨기기
         //hideActionBar();
-
         mMemoEdit = (EditText) findViewById(R.id.editevent);
+            byte[] bytes = storage.readFile(newDir);
+        if(!(bytes ==null)) {
+            mMemoEdit.setText(new String(bytes));
+        }
 
-        String memoData = mTextFileManager.load();
-        mMemoEdit.setText(memoData);
+
+
+//        String memoData = mTextFileManager.load();
+//        mMemoEdit.setText(memoData);
 
         Toast.makeText(this, "불러오기 완료", Toast.LENGTH_SHORT).show();
 
@@ -60,7 +87,6 @@ public class EditingEvent extends AppCompatActivity {
     //액션버튼을 클릭했을때의 동작
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
-        int id = item.getItemId();
         switch(item.getItemId()) {
             case android.R.id.home:
                 Toast.makeText(this, "홈버튼", Toast.LENGTH_SHORT).show();
@@ -68,8 +94,15 @@ public class EditingEvent extends AppCompatActivity {
                 break;
             case R.id.save_btn:
                 String memoData = mMemoEdit.getText().toString();
-                mTextFileManager.save(memoData, view_id);
-                mMemoEdit.setText("");
+                String newDir = path + File.separator + id;
+                    storage.createDirectory(path);
+                    storage.createFile(newDir, memoData);
+
+                Log.d("path", newDir);
+
+
+//                mTextFileManager.save(memoData, Integer.toString(view_id));
+//                mMemoEdit.setText("");
 
                 Toast.makeText(this, "저장 완료", Toast.LENGTH_SHORT).show();
                 break;

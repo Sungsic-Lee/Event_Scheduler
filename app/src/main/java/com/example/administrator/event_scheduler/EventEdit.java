@@ -75,28 +75,18 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
     @Override
     protected void onStart() {
         super.onStart();
-
-        //DB 관련
-        final DBHelper dbManager = new DBHelper(getApplicationContext(), "Event_DB", null, 1);
-        String read_DB = dbManager.serching(mon);
-        String read_DB_split [];
-        read_DB_split = read_DB.split(";");
-
-
-        //ListView 관련
         ListView listView = (ListView)findViewById(R.id.event_list);
-        ArrayAdapter<String> adapter1;
-        adapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, read_DB_split);
-        listView.setAdapter(adapter1);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(EventEdit.this, "click",Toast.LENGTH_SHORT).show();
+
                 // List View 클릭
                 Intent intent = new Intent(EventEdit.this, EditingEvent.class);
-                intent.putExtra("select_view", Integer.toString(position));
-                startActivity(intent);
+                intent.putExtra("ViewId", position);
+
+                startActivityForResult(intent, 2);
 
 
             }
@@ -107,9 +97,7 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
     protected void onRestart() {
         super.onRestart();
 
-        final DBHelper dbManager = new DBHelper(getApplicationContext(), "Event_DB", null, 1);
-        dbManager.onCreate(database);
-        dbManager.insert(title, month, day1, hour, minutes, scale);
+
 
     }
 
@@ -158,6 +146,18 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
                 hour = Integer.parseInt(data.getStringExtra("hour"));
                 minutes = Integer.parseInt(data.getStringExtra("minutes"));
                 scale = Integer.parseInt(data.getStringExtra("scale"));
+
+                final DBHelper dbManager = new DBHelper(getApplicationContext(), "Event_DB", null, 1);
+                dbManager.onCreate(database);
+                dbManager.insert("Event_DB", title, month, day1, hour, minutes, scale);
+
+                String read_DB = dbManager.serching("Event_DB", mon);
+                String read_DB_split [];
+                read_DB_split = read_DB.split(";");
+                ListView listView = (ListView)findViewById(R.id.event_list);
+                ArrayAdapter<String> adapter1;
+                adapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, read_DB_split);
+                listView.setAdapter(adapter1);
             }
         } else if(resultCode == RESULT_CANCELED) {
             Toast.makeText(this, "숫자를 입력해주십시오!", Toast.LENGTH_SHORT).show();
@@ -172,12 +172,6 @@ public class EventEdit extends AppCompatActivity implements OnClickListener {
         if(actionBar != null)
             actionBar.hide();
     }
-
-
-
-
-
-
 
 
 
